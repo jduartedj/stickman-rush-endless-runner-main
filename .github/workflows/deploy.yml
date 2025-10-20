@@ -1,0 +1,36 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: PROD  # This references the GitHub environment named "PROD"
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build with production environment variables
+      env:
+        # These variables are pulled from the PROD environment in GitHub
+        VITE_ADMOB_APP_ID: ${{ secrets.VITE_ADMOB_APP_ID }}
+        VITE_ADMOB_BANNER_AD_UNIT_ID: ${{ secrets.VITE_ADMOB_BANNER_AD_UNIT_ID }}
+      run: npm run build
+      
+    - name: Deploy
+      # Add your deployment steps here
+      # This could be deploying to GitHub Pages, Vercel, Netlify, etc.
+      run: echo "Deploy your built app here"
