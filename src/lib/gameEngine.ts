@@ -2,8 +2,6 @@ import { GameState, Stickman, Obstacle, Bonus, DeathEffect, GAME_CONFIG } from '
 
 export class GameEngine {
   private gameState: GameState;
-  private lastObstacleY: number = -50;
-  private lastBonusY: number = -100;
   private lastEventSpawnY: number = 0;
   private mouseX: number = GAME_CONFIG.CANVAS_WIDTH / 2;
   private mouseY: number = GAME_CONFIG.CANVAS_HEIGHT - 180;
@@ -75,8 +73,6 @@ export class GameEngine {
 
   restart() {
     this.gameState = this.createInitialState();
-    this.lastObstacleY = -50;
-    this.lastBonusY = -100;
     this.lastEventSpawnY = 0;
     this.mouseX = GAME_CONFIG.CANVAS_WIDTH / 2;
     this.mouseY = GAME_CONFIG.CANVAS_HEIGHT - 180;
@@ -429,7 +425,7 @@ export class GameEngine {
     }
   }
 
-  private canSpawnAtY(y: number, type: 'obstacle' | 'bonus'): boolean {
+  private canSpawnAtY(y: number, _type: 'obstacle' | 'bonus'): boolean {
     const minDistance = 120; // Increased vertical spacing between events
     
     // Check against existing obstacles
@@ -462,13 +458,11 @@ export class GameEngine {
     }
 
     this.gameState.obstacles.push(obstacle);
-    this.lastObstacleY = obstacle.y;
   }
 
   private spawnBonus() {
     const bonus = this.createBonus();
     this.gameState.bonuses.push(bonus);
-    this.lastBonusY = bonus.y;
   }
 
   private createWallObstacle(): Obstacle {
@@ -775,7 +769,6 @@ export class GameEngine {
     // Spawn more each frame for better responsiveness
     const spawnThisFrame = Math.min(delayedCount, 8); // Increased from 5 to 8
     
-    const currentCount = this.gameState.stickmen.length;
     const roadMargin = 50;
     const effectiveCanvasWidth = Math.min(GAME_CONFIG.CANVAS_WIDTH, GAME_CONFIG.MAX_ROAD_WIDTH);
     const roadCenterX = GAME_CONFIG.CANVAS_WIDTH / 2;

@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useKV } from '@github/spark/hooks';
 import { GameCanvas } from './components/GameCanvas';
 import { GameControls } from './components/GameControls';
 import { AdMobBanner } from './components/AdMobBanner';
+import { initializeAdMob, useInterstitialAds } from './hooks/useAdMob';
 
 function App() {
   const [score, setScore] = useState(0);
@@ -13,10 +14,18 @@ function App() {
   const [isPaused, setIsPaused] = useState(false);
   const [highScore, setHighScore] = useKV<number>('stickman-runner-high-score', 0);
 
+  // Initialize AdMob on mount
   useEffect(() => {
-    // Web-only initialization
-    console.log('Game initialized in web mode');
+    initializeAdMob();
+    console.log('Game initialized');
   }, []);
+
+  // Show interstitial ads ONLY on game over, NOT on level up
+  useInterstitialAds(score, level, isGameOver, {
+    onGameOver: true,
+    onLevelUp: false,  // Disabled - too intrusive
+    levelInterval: 5,
+  });
 
   const handleScoreUpdate = useCallback((newScore: number, newLevel: number, newArmySize: number, newScoreForNextLevel: number) => {
     setScore(newScore);
@@ -81,7 +90,7 @@ function App() {
         </div>
       </div>
 
-      {/* AdMob Banner - fixed 50px height */}
+      {/* AdMob Banner - fixed 50px height, always visible */}
       <div className="h-[50px] flex-shrink-0">
         <AdMobBanner />
       </div>

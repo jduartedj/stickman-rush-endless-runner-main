@@ -1,44 +1,27 @@
-# AdMob Integration Setup
+# AdMob Integration
 
-This app includes AdMob banner ads integration that can be configured for production use.
+Stickman Rush uses `@capacitor-community/admob` for native ads and an AdSense fallback for the web version.
 
-- `VITE_ADMOB_APP_ID`: Y
+## Configuration
 
+Set these environment variables (or they'll fall back to production defaults in code):
 
+| Variable | Description |
+|----------|-------------|
+| `VITE_ADMOB_APP_ID` | AdMob Application ID |
+| `VITE_ADMOB_BANNER_AD_UNIT_ID` | Banner ad unit ID |
+| `VITE_ADMOB_INTERSTITIAL_AD_UNIT_ID` | Interstitial ad unit ID |
 
-- `VITE_ADMOB_APP_ID`: Your AdMob App ID from Google AdMob console
-- `VITE_ADMOB_BANNER_AD_UNIT_ID`: Your AdMob Banner Ad Unit ID
+## Ad Placement
 
-## Configuration Steps
+- **Banner:** Bottom of screen (persistent)
+- **Interstitial:** Game over screen only (not on level up)
 
-### 1. Development/Testing
-The app is pre-configured with Google's official test IDs in `.env`:
-- Test App ID: `ca-app-pub-3940256099942544~3347511713`
-2. Ensure the App ID matches the one registered in AdMob console
+## Files
 
-- `.env` - Development 
-- `src/components/AdMobBanner.tsx` - Updated to use en
+- `src/components/AdMobBanner.tsx` — Banner component (native + web fallback)
+- `src/hooks/useAdMob.ts` — AdMob initialization, banner & interstitial hooks
 
-- Test IDs are safe to use during devel
-- AdMob requires proper app store listing a
+## Testing
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+For development, use [Google's official test IDs](https://developers.google.com/admob/android/test-ads) and set `initializeForTesting: true` in `useAdMob.ts`.

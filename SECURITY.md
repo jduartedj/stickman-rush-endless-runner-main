@@ -1,31 +1,35 @@
-Thanks for helping make GitHub safe for everyone.
+# Security Policy — Stickman Rush
 
-# Security
+## Reporting a Vulnerability
 
-GitHub takes the security of our software products and services seriously, including all of the open source code repositories managed through our GitHub organizations, such as [GitHub](https://github.com/GitHub).
+If you discover a security issue in Stickman Rush, please report it responsibly:
 
-Even though [open source repositories are outside of the scope of our bug bounty program](https://bounty.github.com/index.html#scope) and therefore not eligible for bounty rewards, we will ensure that your finding gets passed along to the appropriate maintainers for remediation. 
+**Email:** security@stickmanrunner.com
 
-## Reporting Security Issues
+Please include:
+- Description of the vulnerability
+- Steps to reproduce
+- Impact assessment
+- Any proof-of-concept code
 
-If you believe you have found a security vulnerability in any GitHub-owned repository, please report it to us through coordinated disclosure.
+We aim to respond within 48 hours and will keep you updated on remediation progress.
 
-**Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
+## Scope
 
-Instead, please send an email to opensource-security[@]github.com.
+This policy covers:
+- The Stickman Rush Android app (`com.stickmanrunner.game`)
+- The web version hosted on GitHub Pages
+- This source repository
 
-Please include as much of the information listed below as you can to help us better understand and resolve the issue:
+## Out of Scope
 
-  * The type of issue (e.g., buffer overflow, SQL injection, or cross-site scripting)
-  * Full paths of source file(s) related to the manifestation of the issue
-  * The location of the affected source code (tag/branch/commit or direct URL)
-  * Any special configuration required to reproduce the issue
-  * Step-by-step instructions to reproduce the issue
-  * Proof-of-concept or exploit code (if possible)
-  * Impact of the issue, including how an attacker might exploit the issue
+- Third-party dependencies (report to their maintainers directly)
+- Google AdMob SDK issues (report to Google)
+- Social engineering attacks
 
-This information will help us triage your report more quickly.
+## Supported Versions
 
-## Policy
-
-See [GitHub's Safe Harbor Policy](https://docs.github.com/en/site-policy/security-policies/github-bug-bounty-program-legal-safe-harbor#1-safe-harbor-terms)
+| Version | Supported |
+|---------|-----------|
+| Latest  | ✅        |
+| Older   | ❌        |
