@@ -1,0 +1,42 @@
+{
+	"appId": "com.stickmanrunner.game",
+	"appName": "Stickman Runner",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https",
+		"iosScheme": "capacitor"
+	},
+	"android": {
+		"allowMixedContent": true,
+		"captureInput": true,
+		"webContentsDebuggingEnabled": true
+	},
+	"ios": {
+		"contentInset": "automatic",
+		"allowsLinkPreview": false,
+		"scrollEnabled": false,
+		"limitsNavigationsToAppBoundDomains": true,
+		"preferredContentMode": "mobile"
+	},
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 2000,
+			"backgroundColor": "#1a1a2e",
+			"showSpinner": false,
+			"androidSpinnerStyle": "small",
+			"iosSpinnerStyle": "small",
+			"splashFullScreen": true,
+			"splashImmersive": true,
+			"launchAutoHide": true
+		},
+		"StatusBar": {
+			"style": "dark",
+			"backgroundColor": "#1a1a2e"
+		},
+		"Keyboard": {
+			"resize": "none",
+			"resizeOnFullScreen": false
+		}
+	},
+	"packageClassList": []
+}
