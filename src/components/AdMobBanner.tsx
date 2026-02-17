@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { useAdMobBanner } from '../hooks/useAdMob';
 
 declare global {
   interface Window {
@@ -6,28 +8,35 @@ declare global {
   }
 }
 
-// Get AdMob configuration from GitHub environment variables (PROD environment)
-const getAdMobConfig = () => {
-  // In production, these will be injected by GitHub Actions/Deployment from PROD environment
-  const ADMOB_APP_ID = process.env.VITE_ADMOB_APP_ID || import.meta.env.VITE_ADMOB_APP_ID || 'ca-app-pub-3940256099942544~3347511713';
-  const ADMOB_BANNER_AD_UNIT_ID = process.env.VITE_ADMOB_BANNER_AD_UNIT_ID || import.meta.env.VITE_ADMOB_BANNER_AD_UNIT_ID || 'ca-app-pub-3940256099942544/6300978111';
-  
-  return { ADMOB_APP_ID, ADMOB_BANNER_AD_UNIT_ID };
-};
-
-const { ADMOB_APP_ID, ADMOB_BANNER_AD_UNIT_ID } = getAdMobConfig();
+// AdSense publisher ID for web ads
+const ADSENSE_CLIENT_ID = 'ca-pub-6338497362113540';
+// AdSense ad slot — create a display ad unit at https://adsense.google.com and paste the slot ID here
+const ADSENSE_AD_SLOT = import.meta.env.VITE_ADSENSE_AD_SLOT || '';
 
 export const AdMobBanner: React.FC = () => {
+  // Use native AdMob banner on mobile
+  const isNative = useAdMobBanner();
+  
+  // Web-only: AdSense fallback
   useEffect(() => {
-    try {
-      if (window.adsbygoogle) {
-        window.adsbygoogle.push({});
+    if (!Capacitor.isNativePlatform()) {
+      try {
+        if (window.adsbygoogle) {
+          window.adsbygoogle.push({});
+        }
+      } catch (error) {
+        console.error('AdSense error:', error);
       }
-    } catch (error) {
-      console.error('AdSense error:', error);
     }
   }, []);
 
+  // On native, the banner is shown natively at the bottom
+  // Just reserve the space
+  if (isNative) {
+    return <div className="h-[50px]" />;
+  }
+
+  // Web fallback
   return (
     <div className="h-full bg-card/50 border-t border-border flex items-center justify-center">
       <ins 
@@ -37,14 +46,11 @@ export const AdMobBanner: React.FC = () => {
           width: '100%',
           height: '50px'
         }}
-        data-ad-client={ADMOB_APP_ID}
-        data-ad-slot={ADMOB_BANNER_AD_UNIT_ID}
+        data-ad-client={ADSENSE_CLIENT_ID}
+        data-ad-slot={ADSENSE_AD_SLOT}
         data-ad-format="auto"
         data-full-width-responsive="true"
       />
     </div>
   );
 };
-
-
-
