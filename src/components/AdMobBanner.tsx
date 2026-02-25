@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { useAdMobBanner } from '../hooks/useAdMob';
 
@@ -8,38 +8,37 @@ declare global {
   }
 }
 
-// AdSense publisher ID for web ads
 const ADSENSE_CLIENT_ID = 'ca-pub-6338497362113540';
-// AdSense Banner ad slot
 const ADSENSE_BANNER_SLOT = '4586258327';
 
 export const AdMobBanner: React.FC = () => {
-  // Use native AdMob banner on mobile
   const { isNative, bannerHeight } = useAdMobBanner();
-  
-  // Web-only: AdSense fallback
+  const adPushedRef = useRef(false);
+  const insRef = useRef<HTMLModElement>(null);
+
+  // Push ad after the ins element is mounted
   useEffect(() => {
-    if (!Capacitor.isNativePlatform()) {
-      try {
-        if (window.adsbygoogle) {
-          window.adsbygoogle.push({});
-        }
-      } catch (error) {
-        console.error('AdSense error:', error);
-      }
+    if (Capacitor.isNativePlatform()) return;
+    if (adPushedRef.current) return;
+    if (!insRef.current) return;
+
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      adPushedRef.current = true;
+    } catch (error) {
+      console.error('AdSense banner error:', error);
     }
   }, []);
 
-  // On native, the banner is shown natively at the bottom
-  // Just reserve the space
+  // On native, just reserve space for the AdMob banner
   if (isNative) {
     return <div style={{ height: `${bannerHeight}px` }} className="bg-[#1a1a2e]" />;
   }
 
-  // Web fallback
   return (
     <div className="h-full bg-card/50 border-t border-border flex items-center justify-center">
-      <ins 
+      <ins
+        ref={insRef}
         className="adsbygoogle"
         style={{
           display: 'block',
