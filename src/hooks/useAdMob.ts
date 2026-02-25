@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { AdMob, BannerAdSize, BannerAdPosition, BannerAdOptions } from '@capacitor-community/admob';
 
@@ -29,27 +29,42 @@ export const initializeAdMob = async () => {
   }
 };
 
-// Show interstitial ad
+// Cooldown tracking for interstitial ads
+let lastInterstitialTime = 0;
+const INTERSTITIAL_COOLDOWN_MS = 60000; // 1 minute cooldown
+
+// Show interstitial ad (with cooldown)
 export const showInterstitial = async () => {
   if (!Capacitor.isNativePlatform()) {
     console.log('Interstitial ads only work on native platforms');
     return;
   }
   
+  const now = Date.now();
+  if (now - lastInterstitialTime < INTERSTITIAL_COOLDOWN_MS) {
+    console.log('Interstitial cooldown active, skipping');
+    return;
+  }
+  
   try {
     await AdMob.prepareInterstitial({ adId: ADMOB_INTERSTITIAL_AD_UNIT_ID });
     await AdMob.showInterstitial();
+    lastInterstitialTime = Date.now();
     console.log('Interstitial ad shown');
   } catch (error) {
     console.error('Failed to show interstitial ad:', error);
   }
 };
 
-// Hook for banner ads
+// Hook for banner ads - returns { isNative, bannerHeight }
 export const useAdMobBanner = () => {
   const bannerShown = useRef(false);
+  const [bannerHeight, setBannerHeight] = useState(60); // safe default
   
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    let sizeListener: any;
+    
     const showBanner = async () => {
       if (!Capacitor.isNativePlatform()) {
         console.log('AdMob banners only work on native platforms');
@@ -60,11 +75,20 @@ export const useAdMobBanner = () => {
         try {
           await initializeAdMob();
           
+          // Listen for banner size changes to get actual height
+          sizeListener = await AdMob.addListener('bannerAdSizeChanged', (info: any) => {
+            console.log('Banner size changed:', info);
+            if (info && info.height) {
+              setBannerHeight(info.height);
+            }
+          });
+          
           const options: BannerAdOptions = {
             adId: ADMOB_BANNER_AD_UNIT_ID,
-            adSize: BannerAdSize.BANNER,
+            adSize: BannerAdSize.ADAPTIVE_BANNER,
             position: BannerAdPosition.BOTTOM_CENTER,
             margin: 0,
+            isTesting: false,
           };
           
           await AdMob.showBanner(options);
@@ -76,16 +100,21 @@ export const useAdMobBanner = () => {
       }
     };
     
-    showBanner();
+    // Delay banner by 10 seconds so users can read instructions
+    timer = setTimeout(showBanner, 10000);
     
     return () => {
+      clearTimeout(timer);
+      if (sizeListener) {
+        sizeListener.remove();
+      }
       if (Capacitor.isNativePlatform() && bannerShown.current) {
         AdMob.removeBanner().catch(console.error);
       }
     };
   }, []);
   
-  return Capacitor.isNativePlatform();
+  return { isNative: Capacitor.isNativePlatform(), bannerHeight };
 };
 
 // Hook for interstitial ads - ONLY on game over, NOT on level up
@@ -113,8 +142,8 @@ export const useInterstitialAds = (
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
     
-    // Show interstitial on game over
-    if (onGameOver && isGameOver && !gameOverShownRef.current) {
+    // Show interstitial on game over (only if past level 2)
+    if (onGameOver && isGameOver && !gameOverShownRef.current && level > 2) {
       showInterstitial();
       gameOverShownRef.current = true;
       return;
@@ -132,5 +161,5 @@ export const useInterstitialAds = (
       }
       lastLevelRef.current = level;
     }
-  }, [score, level, isGameOver, onGameOver, onLevelUp, levelInterval]);
+  }, [isGameOver, level, onGameOver, onLevelUp, levelInterval]);
 };

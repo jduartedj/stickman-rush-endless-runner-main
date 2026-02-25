@@ -26,9 +26,9 @@ export function GameControls({
   onPause
 }: GameControlsProps) {
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-2 sm:gap-6 flex-shrink-0">
       {/* Stats */}
-      <div className="flex items-center gap-4 text-sm">
+      <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
         <div className="text-center">
           <div className="font-bold text-accent">{score}/{scoreForNextLevel}</div>
           <div className="text-xs text-muted-foreground">Score</div>
@@ -47,8 +47,8 @@ export function GameControls({
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="flex items-center gap-2">
+      {/* Controls - hidden on mobile, game uses touch/click */}
+      <div className="hidden sm:flex items-center gap-2">
         <Button
           onClick={onRestart}
           variant="outline"
@@ -72,9 +72,9 @@ export function GameControls({
         )}
       </div>
 
-      {/* Game Over Status */}
+      {/* Game Over Status - hidden on mobile */}
       {isGameOver && (
-        <div className="text-sm text-destructive font-medium">
+        <div className="hidden sm:block text-sm text-destructive font-medium">
           Game Over - Click to restart
         </div>
       )}

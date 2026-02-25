@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useKV } from '@github/spark/hooks';
+import { Capacitor } from '@capacitor/core';
 import { GameCanvas } from './components/GameCanvas';
 import { GameControls } from './components/GameControls';
 import { AdMobBanner } from './components/AdMobBanner';
+import { AdSenseInterstitial } from './components/AdSenseInterstitial';
 import { initializeAdMob, useInterstitialAds } from './hooks/useAdMob';
 
 function App() {
@@ -17,6 +19,14 @@ function App() {
   // Initialize AdMob on mount
   useEffect(() => {
     initializeAdMob();
+    // Ensure status bar doesn't overlap content
+    if (Capacitor.isNativePlatform()) {
+      import('@capacitor/status-bar').then(({ StatusBar, Style }) => {
+        StatusBar.setOverlaysWebView({ overlay: false });
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: '#1a1a2e' });
+      }).catch(() => {});
+    }
     console.log('Game initialized');
   }, []);
 
@@ -52,14 +62,9 @@ function App() {
   return (
     <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* Header with game title and controls - compact */}
-      <div className="px-4 py-2 bg-card/50 border-b border-border flex-shrink-0">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-primary">Stickman Runner</h1>
-            <div className="text-sm text-muted-foreground">
-              Build your army and survive
-            </div>
-          </div>
+      <div className="px-4 py-2 bg-card/50 border-b border-border flex-shrink-0" style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top, 0px))' }}>
+        <div className="flex items-center justify-between max-w-7xl mx-auto gap-2 flex-wrap">
+          <h1 className="text-lg sm:text-2xl font-bold text-primary whitespace-nowrap">Stickman Runner</h1>
           
           <GameControls
             score={score}
@@ -90,10 +95,18 @@ function App() {
         </div>
       </div>
 
-      {/* AdMob Banner - fixed 50px height, always visible */}
-      <div className="h-[50px] flex-shrink-0">
+      {/* AdMob Banner - adaptive height, always visible */}
+      <div className="flex-shrink-0 bg-[#1a1a2e] overflow-hidden">
         <AdMobBanner />
       </div>
+
+      {/* AdSense Interstitial - web only, shown on game over */}
+      <AdSenseInterstitial
+        isGameOver={isGameOver}
+        level={level}
+        score={score}
+        onRestart={handleRestart}
+      />
     </div>
   );
 }

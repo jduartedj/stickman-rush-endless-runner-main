@@ -10,12 +10,12 @@ declare global {
 
 // AdSense publisher ID for web ads
 const ADSENSE_CLIENT_ID = 'ca-pub-6338497362113540';
-// AdSense ad slot — create a display ad unit at https://adsense.google.com and paste the slot ID here
-const ADSENSE_AD_SLOT = import.meta.env.VITE_ADSENSE_AD_SLOT || '';
+// AdSense Banner ad slot
+const ADSENSE_BANNER_SLOT = '4586258327';
 
 export const AdMobBanner: React.FC = () => {
   // Use native AdMob banner on mobile
-  const isNative = useAdMobBanner();
+  const { isNative, bannerHeight } = useAdMobBanner();
   
   // Web-only: AdSense fallback
   useEffect(() => {
@@ -33,7 +33,7 @@ export const AdMobBanner: React.FC = () => {
   // On native, the banner is shown natively at the bottom
   // Just reserve the space
   if (isNative) {
-    return <div className="h-[50px]" />;
+    return <div style={{ height: `${bannerHeight}px` }} className="bg-[#1a1a2e]" />;
   }
 
   // Web fallback
@@ -47,7 +47,7 @@ export const AdMobBanner: React.FC = () => {
           height: '50px'
         }}
         data-ad-client={ADSENSE_CLIENT_ID}
-        data-ad-slot={ADSENSE_AD_SLOT}
+        data-ad-slot={ADSENSE_BANNER_SLOT}
         data-ad-format="auto"
         data-full-width-responsive="true"
       />

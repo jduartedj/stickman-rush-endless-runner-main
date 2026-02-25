@@ -205,29 +205,26 @@ export function GameCanvas({ onScoreUpdate, onGameOver }: GameCanvasProps) {
       canvas.style.height = `${rect.height}px`;
     };
 
-    // Initial size with a slight delay to ensure DOM is ready
-    setTimeout(resizeCanvas, 100);
-    
     // Handle window resize
     window.addEventListener('resize', resizeCanvas);
 
     engineRef.current = new GameEngine();
     rendererRef.current = new GameRenderer(canvas);
 
-    // Initialize mouse position to center of canvas - will be updated after resize
+    // Resize canvas first, then center stickman and start game
+    // This ensures the game doesn't render until canvas is properly sized
     setTimeout(() => {
-      if (canvas) {
+      resizeCanvas();
+      if (canvas && engineRef.current) {
         mouseXRef.current = canvas.width / 2;
-        mouseYRef.current = canvas.height - 180; // Default Y position
+        mouseYRef.current = canvas.height - 180;
         lastTouchXRef.current = canvas.width / 2;
         lastTouchYRef.current = canvas.height - 180;
-        if (engineRef.current) {
-          engineRef.current.setMousePosition(mouseXRef.current, mouseYRef.current);
-        }
+        engineRef.current.setMousePosition(mouseXRef.current, mouseYRef.current);
+        engineRef.current.recenter();
       }
-    }, 150);
-
-    startGame();
+      startGame();
+    }, 100);
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);

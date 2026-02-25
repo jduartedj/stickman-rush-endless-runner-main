@@ -30,6 +30,23 @@ export class GameEngine {
     this.gameState = this.createInitialState();
   }
 
+  /** Re-center the initial stickman after canvas resize */
+  recenter(): void {
+    const centerX = GAME_CONFIG.CANVAS_WIDTH / 2;
+    const startY = GAME_CONFIG.CANVAS_HEIGHT - 180;
+    if (this.gameState.stickmen.length > 0) {
+      const leader = this.gameState.stickmen[0];
+      leader.x = centerX;
+      leader.y = startY;
+      leader.targetX = centerX;
+      leader.targetY = startY;
+      leader.lastX = centerX;
+      leader.lastY = startY;
+    }
+    this.mouseX = centerX;
+    this.mouseY = startY;
+  }
+
   private createInitialState(): GameState {
     const centerX = GAME_CONFIG.CANVAS_WIDTH / 2;
     const startY = GAME_CONFIG.CANVAS_HEIGHT - 180; // Increased margin for finger clearance
