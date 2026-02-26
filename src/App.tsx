@@ -88,14 +88,16 @@ function App() {
         />
       </div>
 
-      {/* Bottom instructions - compact */}
-      <div className="px-4 py-2 bg-card/30 border-t border-border flex-shrink-0">
-        <div className="text-center text-sm text-muted-foreground max-w-7xl mx-auto">
-          <p>Move your mouse or touch the screen to control your army • Click to pause/unpause</p>
+      {/* Bottom instructions - only on web (not useful on mobile touch devices) */}
+      {!Capacitor.isNativePlatform() && (
+        <div className="px-4 py-2 bg-card/30 border-t border-border flex-shrink-0">
+          <div className="text-center text-sm text-muted-foreground max-w-7xl mx-auto">
+            <p>Move your mouse or touch the screen to control your army • Click to pause/unpause</p>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* AdMob Banner - adaptive height, always visible */}
+      {/* Ad Banner - adaptive height, always visible */}
       <div className="flex-shrink-0 bg-[#1a1a2e] overflow-hidden">
         <AdMobBanner />
       </div>

@@ -59,7 +59,7 @@ export const showInterstitial = async () => {
 // Hook for banner ads - returns { isNative, bannerHeight }
 export const useAdMobBanner = () => {
   const bannerShown = useRef(false);
-  const [bannerHeight, setBannerHeight] = useState(60); // safe default
+  const [bannerHeight, setBannerHeight] = useState(90); // safe default — adaptive banners can be tall
   
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
