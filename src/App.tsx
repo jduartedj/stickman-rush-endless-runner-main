@@ -1,5 +1,23 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useKV } from '@github/spark/hooks';
+// localStorage-based replacement for useKV (Spark runtime not available on Android)
+function useLocalStorage<T>(key: string, defaultValue: T): [T, (updater: (current: T) => T) => void] {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored !== null ? JSON.parse(stored) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  });
+  const setStoredValue = useCallback((updater: (current: T) => T) => {
+    setValue((prev) => {
+      const next = updater(prev);
+      try { localStorage.setItem(key, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, [key]);
+  return [value, setStoredValue];
+}
 import { Capacitor } from '@capacitor/core';
 import { GameCanvas } from './components/GameCanvas';
 import { GameControls } from './components/GameControls';
@@ -14,7 +32,7 @@ function App() {
   const [scoreForNextLevel, setScoreForNextLevel] = useState(100);
   const [isGameOver, setIsGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [highScore, setHighScore] = useKV<number>('stickman-runner-high-score', 0);
+  const [highScore, setHighScore] = useLocalStorage<number>('stickman-runner-high-score', 0);
 
   // Initialize AdMob on mount
   useEffect(() => {
